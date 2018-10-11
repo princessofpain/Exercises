@@ -4,8 +4,12 @@ import java.text.DecimalFormat;
 
 public class CheckPayments {
 	private final double INTEREST;
-	private final int YEARS;
+	private int YEARS;
 	private final int AMOUNT;
+	
+	private Loan[] bulletCalculation;
+	private Loan[] amortizingCalculation;
+	private Loan[] annuityCalculation;
 	
 	public CheckPayments(int amount, int years, double interest) {
 		AMOUNT = amount;
@@ -16,9 +20,13 @@ public class CheckPayments {
 	// this repayment has to be payed fully at the end of the time period, but the interest has to be calculated for every year
 	public double checkBulletRepayment() {
 		double result;
+		bulletCalculation = new Loan[1];
 		
 		double interestInTotal = ((AMOUNT / 100) * INTEREST) * YEARS;
 		result = AMOUNT + interestInTotal;
+		
+		Loan bullet = new Loan(interestInTotal, AMOUNT, result);
+		bulletCalculation[0] = bullet;
 		
 		return result;
 	}
@@ -29,33 +37,54 @@ public class CheckPayments {
 		double totalInterest = 0;
 		double rest = AMOUNT;
 		double rate = AMOUNT / (YEARS * 12);
-//		System.out.println("This is the monthly rate: " + rate);
-//		System.out.println();
-		DecimalFormat df = new DecimalFormat("0.00");
+		amortizingCalculation = new Loan[YEARS * 12];
 		
-		for(int i = YEARS * 12; i > 0 && rest > 0; i--) {
+		for(int i = 0; i < YEARS * 12 && rest > 0; i++) {
+			double originalRest = rest;
 			double monthlyInterest = ((rest / 100) * INTEREST) / 12;
-//			System.out.println("Monthly interest: " + df.format(monthlyInterest));
 			totalInterest = totalInterest + monthlyInterest;
-			rest = rest - rate - monthlyInterest;
-//			System.out.println("Rest - Rate - Interest: " + df.format(rest));
+			rest = originalRest - rate - monthlyInterest;
+			
+			Loan amortizing = new Loan(monthlyInterest, originalRest, rate);
+			amortizingCalculation[i] = amortizing;
 		}
-//		System.out.println();
-//		System.out.println("Total interest: " + df.format(totalInterest));
-//		System.out.println("Rest: " + df.format(rest));
-		result = AMOUNT + totalInterest -rest;	
-		//System.out.println("Result: " + df.format(result));
+		
+		result = AMOUNT + totalInterest - rest;	
 		return result;
 	}
 	
 	// this repayment is like the amortizing but the value of the total rate a month stays the same
 	public double checkAnnuityPayment() {
 		double result;
+		annuityCalculation = new Loan[YEARS * 12];
 		
 		double interest = INTEREST / 100;
-		double annuity = Math.pow(interest + 1, YEARS);
-		result = AMOUNT * (annuity * interest / (annuity - 1));
+		double exponent = Math.pow(interest + 1, YEARS);
+		result = AMOUNT * (exponent * interest / (exponent - 1));
+		
+		double totalInterest = result - AMOUNT;
+		double rate = result / 12;
+		
+		for(int i = 0; i < YEARS * 12; i++) {
+			Loan annuity = new Loan(totalInterest, AMOUNT , rate);	
+			annuityCalculation[i] = annuity;
+		}
 
 		return result * YEARS;
+	}
+	
+	public void generateBulletPlanForDownload() {
+		GenerateXMLFile generator = new GenerateXMLFile();
+		generator.generateXML("Bullet Repayment", bulletCalculation);
+	}
+	
+	public void generateAmortizingPlanForDownload() {
+		GenerateXMLFile generator = new GenerateXMLFile();
+		generator.generateXML("Amortizing Repayment", amortizingCalculation);
+	}
+	
+	public void generateAnnuityPlanForDownload() {
+		GenerateXMLFile generator = new GenerateXMLFile();
+		generator.generateXML("Annuity Repayment", annuityCalculation);
 	}
 }

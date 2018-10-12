@@ -20,7 +20,7 @@ public class CheckPaymentsTest {
 	
 	@Test
 	void amortizingCalculationIsCorrect() {
-		int expected = 238424;
+		int expected = 250308;
 		int actual = (int) cp.checkAmortizingRepayment();
 		
 		assertEquals(expected, actual);

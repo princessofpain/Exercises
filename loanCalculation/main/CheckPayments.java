@@ -1,8 +1,5 @@
 package main;
 
-import java.text.DecimalFormat;
-import java.util.Arrays;
-
 public class CheckPayments {
 	private final double INTEREST;
 	private int YEARS;
@@ -40,18 +37,22 @@ public class CheckPayments {
 		double rate = AMOUNT / (YEARS * 12);
 		amortizingCalculation = new Loan[YEARS * 12];
 		
-		for(int i = 0; i < YEARS * 12 && rest > 0; i++) {
+		for(int i = 0; i < YEARS * 12; i++) {
 			double originalRest = rest;
-			double monthlyInterest = ((rest / 100) * INTEREST) / 12;
-			rate += monthlyInterest;
+			double monthlyInterest = ((originalRest / 100) * INTEREST) / 12;
 			totalInterest = totalInterest + monthlyInterest;
-			rest = originalRest - rate + monthlyInterest;
+			rest = originalRest - rate;
 			
-			Loan amortizing = new Loan(monthlyInterest, originalRest, rate);
+			if(i == YEARS * 12 - 1 && rest > 0) {
+				rate += rest;
+			}
+			
+			double rateWithInterest = monthlyInterest + rate;
+			Loan amortizing = new Loan(monthlyInterest, originalRest, rateWithInterest);
 			amortizingCalculation[i] = amortizing;
 		}
 		
-		result = AMOUNT + totalInterest;	
+		result = AMOUNT + totalInterest + rest;	
 		return result;
 	}
 	

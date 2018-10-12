@@ -6,21 +6,15 @@ public class Loan {
 	private double rate;
 	private double restAfter;
 	private double totalPay;
-	private String loanType;
 	
-	Loan(double interest, double restBefore, double rate, String loanType) {
+	Loan(double interest, double restBefore, double rate) {
 		this.interest = interest;
 		this.restBefore = restBefore;
 		this.rate = rate - interest;
-		this.loanType = loanType;
 		totalPay = rate;		
 		restAfter = restBefore - this.rate;
 	}
-	
-	String getLoanType() {
-		return loanType;
-	}
-	
+
 	double getInterest() {
 		return interest;
 	}

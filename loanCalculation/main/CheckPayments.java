@@ -26,7 +26,7 @@ public class CheckPayments {
 		double interestInTotal = ((AMOUNT / 100) * INTEREST) * YEARS;
 		result = AMOUNT + interestInTotal;
 		
-		Loan bullet = new Loan(interestInTotal, AMOUNT, result, "bullet");
+		Loan bullet = new Loan(interestInTotal, AMOUNT, result);
 		bulletCalculation[0] = bullet;
 		
 		return result;
@@ -43,14 +43,15 @@ public class CheckPayments {
 		for(int i = 0; i < YEARS * 12 && rest > 0; i++) {
 			double originalRest = rest;
 			double monthlyInterest = ((rest / 100) * INTEREST) / 12;
+			rate += monthlyInterest;
 			totalInterest = totalInterest + monthlyInterest;
-			rest = originalRest - rate - monthlyInterest;
+			rest = originalRest - rate + monthlyInterest;
 			
-			Loan amortizing = new Loan(monthlyInterest, originalRest, rate, "amortizing");
+			Loan amortizing = new Loan(monthlyInterest, originalRest, rate);
 			amortizingCalculation[i] = amortizing;
 		}
 		
-		result = AMOUNT + totalInterest - rest;	
+		result = AMOUNT + totalInterest;	
 		return result;
 	}
 	
@@ -70,7 +71,7 @@ public class CheckPayments {
 		
 		for(int i = 0; i < YEARS * 12; i++) {
 			double originalRest = rest;	
-			Loan annuity = new Loan(interestAMonth, originalRest , rate, "annuity");	
+			Loan annuity = new Loan(interestAMonth, originalRest , rate);	
 			annuityCalculation[i] = annuity;
 			rest = originalRest - rate + interestAMonth;
 		}

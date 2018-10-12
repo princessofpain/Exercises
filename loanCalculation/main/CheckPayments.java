@@ -1,6 +1,7 @@
 package main;
 
 import java.text.DecimalFormat;
+import java.util.Arrays;
 
 public class CheckPayments {
 	private final double INTEREST;
@@ -25,7 +26,7 @@ public class CheckPayments {
 		double interestInTotal = ((AMOUNT / 100) * INTEREST) * YEARS;
 		result = AMOUNT + interestInTotal;
 		
-		Loan bullet = new Loan(interestInTotal, AMOUNT, result);
+		Loan bullet = new Loan(interestInTotal, AMOUNT, result, "bullet");
 		bulletCalculation[0] = bullet;
 		
 		return result;
@@ -45,7 +46,7 @@ public class CheckPayments {
 			totalInterest = totalInterest + monthlyInterest;
 			rest = originalRest - rate - monthlyInterest;
 			
-			Loan amortizing = new Loan(monthlyInterest, originalRest, rate);
+			Loan amortizing = new Loan(monthlyInterest, originalRest, rate, "amortizing");
 			amortizingCalculation[i] = amortizing;
 		}
 		
@@ -56,18 +57,22 @@ public class CheckPayments {
 	// this repayment is like the amortizing but the value of the total rate a month stays the same
 	public double checkAnnuityPayment() {
 		double result;
-		annuityCalculation = new Loan[YEARS * 12];
+		int months = YEARS * 12;
+		annuityCalculation = new Loan[months];
 		
 		double interest = INTEREST / 100;
 		double exponent = Math.pow(interest + 1, YEARS);
 		result = AMOUNT * (exponent * interest / (exponent - 1));
 		
-		double totalInterest = result - AMOUNT;
-		double rate = result / 12;
+		final double interestAMonth = ((result * YEARS) - AMOUNT) / months;
+		final double rate = result / 12;
+		double rest = AMOUNT;
 		
 		for(int i = 0; i < YEARS * 12; i++) {
-			Loan annuity = new Loan(totalInterest, AMOUNT , rate);	
+			double originalRest = rest;	
+			Loan annuity = new Loan(interestAMonth, originalRest , rate, "annuity");	
 			annuityCalculation[i] = annuity;
+			rest = originalRest - rate + interestAMonth;
 		}
 
 		return result * YEARS;

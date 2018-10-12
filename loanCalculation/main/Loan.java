@@ -4,28 +4,40 @@ public class Loan {
 	private double interest;
 	private double restBefore;
 	private double rate;
-	private double totalPay = interest + rate;
-	private double restAfter = restBefore + totalPay;
+	private double restAfter;
+	private double totalPay;
+	private String loanType;
 	
-	Loan(double interest, double restBefore, double rate) {
+	Loan(double interest, double restBefore, double rate, String loanType) {
 		this.interest = interest;
 		this.restBefore = restBefore;
-		this.rate = rate;
+		this.rate = rate - interest;
+		this.loanType = loanType;
+		totalPay = rate;		
+		restAfter = restBefore - this.rate;
+	}
+	
+	String getLoanType() {
+		return loanType;
 	}
 	
 	double getInterest() {
 		return interest;
 	}
+	
 	double getRestBefore() {
 		return restBefore;
 	}
+
 	double getRate() {
 		return rate;
 	}
-	double getTotalPay() {
-		return totalPay;
-	}
+
 	double getRestAfter() {
 		return restAfter;
+	}
+	
+	double getTotalPay() {
+		return totalPay;
 	}
 }

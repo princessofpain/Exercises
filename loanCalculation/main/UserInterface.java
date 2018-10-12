@@ -307,19 +307,29 @@ public class UserInterface extends JFrame {
 		JButton btnDownloadFileBullet = new JButton("Download plan");
 		btnDownloadFileBullet.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				
+				myCredit.generateBulletPlanForDownload();
 			}
 		});
 		btnDownloadFileBullet.setFont(new Font("Tahoma", Font.PLAIN, 9));
 		btnDownloadFileBullet.setBounds(385, 227, 114, 20);
 		contentPane.add(btnDownloadFileBullet);
 		
-		JButton btnDownloadFileAmoretizing = new JButton("Download plan");
-		btnDownloadFileAmoretizing.setFont(new Font("Tahoma", Font.PLAIN, 9));
-		btnDownloadFileAmoretizing.setBounds(385, 258, 114, 20);
-		contentPane.add(btnDownloadFileAmoretizing);
+		JButton btnDownloadFileAmortizing = new JButton("Download plan");
+		btnDownloadFileAmortizing.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				myCredit.generateAmortizingPlanForDownload();
+			}
+		});
+		btnDownloadFileAmortizing.setFont(new Font("Tahoma", Font.PLAIN, 9));
+		btnDownloadFileAmortizing.setBounds(385, 258, 114, 20);
+		contentPane.add(btnDownloadFileAmortizing);
 		
 		JButton btnDownloadFileAnnuity = new JButton("Download plan");
+		btnDownloadFileAnnuity.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				myCredit.generateAnnuityPlanForDownload();
+			}
+		});
 		btnDownloadFileAnnuity.setFont(new Font("Tahoma", Font.PLAIN, 9));
 		btnDownloadFileAnnuity.setBounds(385, 288, 114, 20);
 		contentPane.add(btnDownloadFileAnnuity);

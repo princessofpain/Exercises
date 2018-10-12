@@ -1,6 +1,7 @@
 package main;
 
 import java.io.File;
+import java.text.DecimalFormat;
 import java.util.Arrays;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -25,6 +26,7 @@ public class GenerateXMLFile {
 			Element rootElement = doc.createElement("LoanRepayment");
 			doc.appendChild(rootElement);
 			rootElement.setAttribute("type", type);
+			DecimalFormat df = new DecimalFormat("0.00");
 			
 			for(Loan monthlyCalculation: calculation) {
 				Element month = doc.createElement("month");
@@ -34,29 +36,29 @@ public class GenerateXMLFile {
 				
 				Element rest = doc.createElement("rest");
 				month.appendChild(rest);
-				rest.setTextContent(String.valueOf(monthlyCalculation.getRestBefore()));
+				rest.setTextContent(String.valueOf(df.format(monthlyCalculation.getRestBefore())));
 				
 				Element rate = doc.createElement("rate");
 				month.appendChild(rate);
-				rate.setTextContent(String.valueOf(monthlyCalculation.getRate()));
+				rate.setTextContent(String.valueOf(df.format(monthlyCalculation.getRate())));
 				
 				Element interest = doc.createElement("interest");
 				month.appendChild(interest);
-				interest.setTextContent(String.valueOf(monthlyCalculation.getRate()));
+				interest.setTextContent(String.valueOf(df.format(monthlyCalculation.getInterest())));
 				
 				Element totalPay = doc.createElement("totalPay");
 				month.appendChild(totalPay);
-				totalPay.setTextContent(String.valueOf(monthlyCalculation.getTotalPay()));
+				totalPay.setTextContent(String.valueOf(df.format(monthlyCalculation.getTotalPay())));
 
 				Element newRest = doc.createElement("newRest");
 				month.appendChild(newRest);
-				newRest.setTextContent(String.valueOf(monthlyCalculation.getRestAfter()));
+				newRest.setTextContent(String.valueOf(df.format(monthlyCalculation.getRestAfter())));
 			}
 			
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
 			Transformer transformer = transformerFactory.newTransformer();
 			DOMSource source = new DOMSource(doc);
-			StreamResult result = new StreamResult(new File("D:\\Java\\ExercisesGithub\\Exercises\\loanCalculation\\loanCalculation.xml"));
+			StreamResult result = new StreamResult(new File("C:\\Users\\csperansky\\eclipse-workspace\\newExercises\\loanCalculation\\loanCalculation.xml"));
 			
 			transformer.transform(source, result);
 			

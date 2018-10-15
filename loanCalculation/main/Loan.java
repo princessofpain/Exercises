@@ -1,37 +1,45 @@
 package main;
 
+import java.math.BigDecimal;
+
 public class Loan {
-	private double interest;
-	private double restBefore;
-	private double rate;
-	private double restAfter;
-	private double totalPay;
+	private BigDecimal interest;
+	private BigDecimal restBefore;
+	private BigDecimal rate;
+	private BigDecimal restAfter;
+	private BigDecimal totalPay;
+	private String loanType;
 	
-	Loan(double interest, double restBefore, double rate) {
+	Loan(BigDecimal interest, BigDecimal restBefore, BigDecimal rate, String loanType) {
 		this.interest = interest;
 		this.restBefore = restBefore;
-		this.rate = rate - interest;
+		this.rate = rate.subtract(interest);
 		totalPay = rate;		
-		restAfter = restBefore - this.rate;
+		restAfter = restBefore.subtract(this.rate).abs();
+		this.loanType = loanType;
 	}
 
-	double getInterest() {
+	BigDecimal getInterest() {
 		return interest;
 	}
 	
-	double getRestBefore() {
+	BigDecimal getRestBefore() {
 		return restBefore;
 	}
 
-	double getRate() {
+	BigDecimal getRate() {
 		return rate;
 	}
 
-	double getRestAfter() {
+	BigDecimal getRestAfter() {
 		return restAfter;
 	}
 	
-	double getTotalPay() {
+	BigDecimal getTotalPay() {
 		return totalPay;
+	}
+	
+	String getLoanType() {
+		return loanType;
 	}
 }

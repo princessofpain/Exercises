@@ -25,7 +25,8 @@ public class GenerateXMLFile {
 			Document doc = docBuilder.newDocument();
 			Element rootElement = doc.createElement("LoanRepayment");
 			doc.appendChild(rootElement);
-			rootElement.setAttribute("type", type);
+			String loanType = calculation[0].getLoanType();
+			rootElement.setAttribute("type", loanType);
 			DecimalFormat df = new DecimalFormat("0.00");
 			
 			for(Loan monthlyCalculation: calculation) {
@@ -58,7 +59,7 @@ public class GenerateXMLFile {
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
 			Transformer transformer = transformerFactory.newTransformer();
 			DOMSource source = new DOMSource(doc);
-			StreamResult result = new StreamResult(new File("C:\\Users\\csperansky\\eclipse-workspace\\newExercises\\loanCalculation\\loanCalculation.xml"));
+			StreamResult result = new StreamResult(new File("C:\\Users\\csperansky\\eclipse-workspace\\newExercises\\loanCalculation\\" + loanType + "LoanCalculation.xml"));
 			
 			transformer.transform(source, result);
 			

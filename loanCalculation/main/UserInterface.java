@@ -7,6 +7,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 
@@ -25,9 +27,9 @@ public class UserInterface extends JFrame {
 	private JTextField textYears;
 	private JTextField textInterest;
 	
-	private int amount;
-	private int years;
-	private double interest;
+	private BigDecimal amount;
+	private BigDecimal years;
+	private BigDecimal interest;
 	private JTextField textBullet;
 	private JTextField textAmoretizing;
 	private JTextField textAnnuity;
@@ -239,29 +241,30 @@ public class UserInterface extends JFrame {
 		JButton btnCalculate = new JButton("Calculate ");
 		btnCalculate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				amount = Integer.parseInt(textAmount.getText());
-				years = Integer.parseInt(textYears.getText());
-				interest = Double.parseDouble(textInterest.getText());
+				amount = new BigDecimal(textAmount.getText());
+				years = new BigDecimal(textYears.getText());
+				interest = new BigDecimal(textInterest.getText());
 				
 				myCredit = new CheckPayments(amount, years, interest);
-				double resultBullet = myCredit.checkBulletRepayment();
-				double resultAmoretizing = myCredit.checkAmortizingRepayment();
-				double resultAnnuity = myCredit.checkAnnuityPayment();
+				BigDecimal resultBullet = myCredit.checkBulletRepayment();
+				BigDecimal resultAmoretizing = myCredit.checkAmortizingRepayment();
+				BigDecimal resultAnnuity = myCredit.checkAnnuityPayment();
 				
 				displayInformation(resultBullet, resultAmoretizing, resultAnnuity);
 				enableFields();
 			}
 			
-			void displayInformation(double bullet, double amoretizing, double annuity) {
+			void displayInformation(BigDecimal bullet, BigDecimal amoretizing, BigDecimal annuity) {
 				DecimalFormat df = new DecimalFormat("###,###.##");
 				
 				textBullet.setText(df.format(bullet));
 				textAmoretizing.setText(df.format(amoretizing));
-				textAmoretizingRate.setText("( " + df.format(amoretizing / years / 12) + " ) ");
+				BigDecimal twelve = new BigDecimal("12");
+				textAmoretizingRate.setText("( " + df.format(amoretizing.divide(years, MathContext.DECIMAL128).divide(twelve, MathContext.DECIMAL128)) + " ) ");
 				textAnnuity.setText(df.format(annuity));
-				textAnnuityRate.setText(df.format(annuity / years / 12));
+				textAnnuityRate.setText(df.format(annuity.divide(years, MathContext.DECIMAL128).divide(twelve, MathContext.DECIMAL128)));
 				
-				double[] loans = { bullet, amoretizing, annuity };
+				double[] loans = { bullet.doubleValue(), amoretizing.doubleValue(), annuity.doubleValue() };
 		
 				highlightBestOf(loans);
 			}

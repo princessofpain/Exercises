@@ -13,3 +13,11 @@ local.properties
 .loadpath
 .recommenders
 loanCalculation/loanCalculation.xml
+
+.idea/modules.xml
+.idea/*.iml
+.idea/modules
+*.iml
+*.ipr
+
+.idea/*

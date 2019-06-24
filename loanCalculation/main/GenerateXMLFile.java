@@ -51,7 +51,7 @@ public class GenerateXMLFile {
 
 				Element totalPay = doc.createElement("totalPay");
 				month.appendChild(totalPay);
-				totalPay.setTextContent(String.valueOf(df.format(monthlyCalculation.getTotalPay())));
+				totalPay.setTextContent(String.valueOf(df.format(monthlyCalculation.getTotal())));
 
 				Element newRest = doc.createElement("newRest");
 				month.appendChild(newRest);

@@ -26,9 +26,8 @@ public class Loan {
     // this repayment has to be payed fully at the end of the time period, but the interest has to be calculated for every year
     protected Rate[] calculateBullet() {
         BigDecimal interestInTotal = amount.divide(HUNDRED, MathContext.DECIMAL128).multiply(interest).multiply(years);
-        BigDecimal result = amount.add(interestInTotal);
 
-        return new Rate[]{new Rate(interestInTotal, amount, result, "bullet", result)};
+        return new Rate[]{new Rate(interestInTotal, amount, amount, "bullet", amount.add(interestInTotal))};
     }
 
     // this repayment has to be payed monthly including the interest. The total amount decreases every month and for this reason the value of the interest also changes
@@ -37,25 +36,24 @@ public class Loan {
         BigDecimal rest = amount;
         Rate[] rates = new Rate[ALL_MONTHS.intValue()];
         BigDecimal rate = amount.divide(ALL_MONTHS, MathContext.DECIMAL128);
+        BigDecimal total = BigDecimal.ZERO;
 
-        for (int i = 0; i < ALL_MONTHS.intValue() - 1; i++) {
-            rates[i] = addRateWithInterest(rest, rate, "amortizing", amount.subtract(rest).add(rate));
+        for (int i = 0; i < ALL_MONTHS.intValue(); i++) {
+            if(i == ALL_MONTHS.intValue() -1) rate = rest;
+
+            BigDecimal monthlyInterest = calculateMonthlyInterest(rest);
+            total = total.add(monthlyInterest).add(rate);
+
+            rates[i] = new Rate(monthlyInterest, rest, rate, "amortizing", total);;
+
             rest = rates[i].getRestAfter();
         }
-
-        rates[ALL_MONTHS.intValue() - 1] = addRateWithInterest(rest, BigDecimal.ZERO, "amortizing", amount.add(rest));
 
         return rates;
     }
 
-    private Rate addRateWithInterest(BigDecimal rest, BigDecimal rate, String type, BigDecimal total) {
-        BigDecimal monthlyInterest = rest.divide(HUNDRED, MathContext.DECIMAL128).multiply(interest).divide(MONTH_A_YEAR, MathContext.DECIMAL128);
-
-//        if(i == ALL_MONTHS.intValue() - 1 && rest.doubleValue() > 0) {
-//            rate.add(rest);
-//        }
-
-        return new Rate(monthlyInterest, rest, rate, type, total.add(monthlyInterest));
+    private BigDecimal calculateMonthlyInterest(BigDecimal rest) {
+        return rest.divide(HUNDRED, MathContext.DECIMAL128).multiply(interest).divide(MONTH_A_YEAR, MathContext.DECIMAL128);
     }
 
     // this repayment is like the amortizing but the value of the total rate a month stays the same

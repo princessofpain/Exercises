@@ -1,28 +1,28 @@
 package main;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Rate {
-	private BigDecimal interest;
+	private BigDecimal monthlyInterest;
 	private BigDecimal restBefore;
 	private BigDecimal rate;
 	private BigDecimal restAfter;
-	private BigDecimal totalPay;
 	private String loanType;
 	private BigDecimal total;
 
-	Rate(BigDecimal interest, BigDecimal restBefore, BigDecimal rate, String loanType, BigDecimal total) {
-		this.interest = interest;
+	Rate(BigDecimal monthlyInterest, BigDecimal restBefore, BigDecimal rate, String loanType, BigDecimal total) {
+		this.monthlyInterest = monthlyInterest;
 		this.restBefore = restBefore;
-		this.rate = rate.subtract(interest);
-		totalPay = rate;
+		this.rate = rate;
 		this.loanType = loanType;
 		this.total = total;
 		restAfter = calculateRestAfter();
 	}
 
 	BigDecimal getInterest() {
-		return interest;
+		return monthlyInterest;
 	}
 	
 	BigDecimal getRestBefore() {
@@ -37,21 +37,15 @@ public class Rate {
 		return restAfter;
 	}
 	
-	public BigDecimal getTotal() {
-		return total;
-	}
-
-	public BigDecimal getTotalPay() {
-		return totalPay;
-	}
+	public BigDecimal getTotal() { return total; }
 
 	public String getType() { return loanType; }
 
 	BigDecimal calculateRestAfter() {
 		if(loanType.equals("annuity")) {
-			return restBefore.subtract(rate).add(interest);
+			return restBefore.subtract(rate).add(monthlyInterest);
 		} else {
-			return restBefore.subtract(this.rate);
+			return restBefore.subtract(rate);
 		}
 	}
 }

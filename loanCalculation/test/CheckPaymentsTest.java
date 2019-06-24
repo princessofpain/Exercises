@@ -27,11 +27,11 @@ public class CheckPaymentsTest {
 		for(int i = 0; i < allLoans.size(); i++) {
 			Rate[] loan = allLoans.get(i);
 			switch(loan[i].getType()) {
-				case "bullet": 		assertEquals(expectedBullet, loan[i].getTotal().intValue());
+				case "bullet": 		assertEquals(expectedBullet, loan[loan.length-1].getTotal().intValue());
 							   		break;
-				case "amortizing": 	assertEquals(expectedAmortizing, loan[i].getTotal().intValue());
+				case "amortizing": 	assertEquals(expectedAmortizing, loan[loan.length-1].getTotal().intValue());
 								   	break;
-				case "annuity": 	assertEquals(expectedAnnuity, loan[i].getTotal().intValue());
+				case "annuity": 	assertEquals(expectedAnnuity, loan[loan.length-1].getTotal().intValue());
 									break;
 			}
 		}

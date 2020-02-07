@@ -1,10 +1,8 @@
-package main;
+package main.view;
 
 import java.io.File;
-import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.Arrays;
-import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -15,6 +13,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import main.model.Rate;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -39,23 +38,23 @@ public class GenerateXMLFile {
 
 				Element rest = doc.createElement("rest");
 				month.appendChild(rest);
-				rest.setTextContent(String.valueOf(df.format(monthlyCalculation.getRestBefore())));
+				rest.setTextContent(df.format(monthlyCalculation.getRestBefore()));
 
 				Element rate = doc.createElement("rate");
 				month.appendChild(rate);
-				rate.setTextContent(String.valueOf(df.format(monthlyCalculation.getRate())));
+				rate.setTextContent(df.format(monthlyCalculation.getRate()));
 
 				Element interest = doc.createElement("interest");
 				month.appendChild(interest);
-				interest.setTextContent(String.valueOf(df.format(monthlyCalculation.getInterest())));
+				interest.setTextContent(df.format(monthlyCalculation.getInterest()));
 
 				Element totalPay = doc.createElement("totalPay");
 				month.appendChild(totalPay);
-				totalPay.setTextContent(String.valueOf(df.format(monthlyCalculation.getTotal())));
+				totalPay.setTextContent(df.format(monthlyCalculation.getTotal()));
 
 				Element newRest = doc.createElement("newRest");
 				month.appendChild(newRest);
-				newRest.setTextContent(String.valueOf(df.format(monthlyCalculation.getRestAfter())));
+				newRest.setTextContent(df.format(monthlyCalculation.getRestAfter()));
 			}
 
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -65,9 +64,7 @@ public class GenerateXMLFile {
 
 			transformer.transform(source, result);
 
-		} catch(ParserConfigurationException e) {
-			e.printStackTrace();
-		} catch(TransformerException e) {
+		} catch(Exception e) {
 			e.printStackTrace();
 		}
 	}

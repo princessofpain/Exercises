@@ -1,5 +1,7 @@
-package main;
+package main.view;
 
+
+import main.view.GenerateXMLFile;
 
 public class XMLGenerator {
     public void generatePDF() {

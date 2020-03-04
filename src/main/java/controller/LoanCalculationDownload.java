@@ -1,12 +1,10 @@
-package main.controller;
+package main.java.controller;
 
 import java.util.List;
-import java.util.Map;
 
-import main.view.GenerateXMLFile;
-import main.model.Loan;
-import main.model.Calculator;
-import main.model.LoanType;
+import main.java.model.Calculator;
+import main.java.model.Loan;
+import main.java.view.GenerateXMLFile;
 
 public class LoanCalculationDownload extends Calculator {
     public LoanCalculationDownload(Calculator loan) {

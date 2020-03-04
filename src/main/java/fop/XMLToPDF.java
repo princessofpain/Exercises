@@ -1,4 +1,4 @@
-package fop;
+package main.java.fop;
 
 public class XMLToPDF {
 	public static void main(String[] args) {

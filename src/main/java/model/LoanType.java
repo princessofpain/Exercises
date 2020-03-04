@@ -1,4 +1,4 @@
-package main.model;
+package main.java.model;
 
 public enum LoanType {
     BULLET("bullet"), AMORTIZING("amortzing"), ANNUITY("annuity");

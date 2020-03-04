@@ -12,7 +12,7 @@ local.properties
 .settings/
 .loadpath
 .recommenders
-loanCalculation/loanCalculation.xml
+src/loanCalculation.xml
 
 .idea/modules.xml
 .idea/*.iml
@@ -21,3 +21,5 @@ loanCalculation/loanCalculation.xml
 *.ipr
 
 .idea/*
+
+target/

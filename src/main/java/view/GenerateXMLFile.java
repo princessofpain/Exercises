@@ -1,4 +1,4 @@
-package main.view;
+package main.java.view;
 
 import java.io.File;
 import java.text.DecimalFormat;
@@ -13,7 +13,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import main.model.Rate;
+import main.java.model.Rate;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 

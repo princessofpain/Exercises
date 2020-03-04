@@ -1,14 +1,14 @@
-package test.model;
-
-import static junit.framework.Assert.assertEquals;
+package test.java.model;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-import main.model.Loan;
-import main.model.Calculator;
-import main.model.LoanType;
+import main.java.model.Calculator;
+import main.java.model.Loan;
+import main.java.model.LoanType;
 import org.junit.jupiter.api.Test;
+
+import static junit.framework.Assert.assertEquals;
 
 class CalculatorTest {
 	

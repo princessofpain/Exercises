@@ -1,13 +1,11 @@
-package main.controller;
+package main.java.controller;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 
-import main.model.Calculator;
-import main.model.Loan;
-import main.model.LoanType;
-import main.view.XMLGenerator;
+import main.java.model.Calculator;
+import main.java.model.Loan;
+import main.java.view.XMLGenerator;
 
 public class LoanResource {
     Calculator calculator;

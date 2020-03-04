@@ -4,10 +4,7 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Calculator {
     private BigDecimal interest;
@@ -48,31 +45,29 @@ public class Calculator {
         BigDecimal interestInTotal = amount.divide(HUNDRED, MathContext.DECIMAL128).multiply(interest).multiply(years);
 
         Rate[] rates = {new Rate(interestInTotal, amount, amount, amount.add(interestInTotal))};
-        return new Loan(LoanType.BULLET, rates, calculateTotalAmount(rates, true), Optional.empty());
+        return new Loan(LoanType.BULLET, rates, amount.add(interestInTotal), Optional.empty());
     }
-
 
     // this repayment has to be payed monthly including the interest. The total amount decreases every month and for this reason the value of the interest also changes
     private Loan calculateAmortizing() {
-        final BigDecimal ALL_MONTHS = years.multiply(MONTH_A_YEAR);
+        BigDecimal allMonths = years.multiply(MONTH_A_YEAR);
         BigDecimal rest = amount;
-        Rate[] rates = new Rate[ALL_MONTHS.intValue()];
+        Rate[] rates = new Rate[allMonths.intValue()];
         BigDecimal total = BigDecimal.ZERO;
         BigDecimal rate;
 
         for (int i = 0; i < rates.length; i++) {
-            if(i == rates.length -1) rate = rest;
-
-            rate = rest.divide(ALL_MONTHS, MathContext.DECIMAL128);
+            rate = calculateRate(allMonths, rest);
             BigDecimal monthlyInterest = calculateMonthlyInterest(rest);
             total = total.add(monthlyInterest).add(rate);
 
             rates[i] = new Rate(monthlyInterest, rest, rate, total);
 
             rest = rates[i].getRestAfter();
+            allMonths = allMonths.subtract(BigDecimal.ONE);
         }
 
-        return new Loan(LoanType.AMORTIZING, rates, calculateTotalAmount(rates, false), Optional.empty());
+        return new Loan(LoanType.AMORTIZING, rates, total, Optional.empty());
     }
 
     // this repayment is like the amortizing but the value of the total rate a month stays the same
@@ -121,16 +116,14 @@ public class Calculator {
                 //new Loan(LoanType.ANNUITY, rates, calculateTotalAmount(rates, false));
     }
 
-    private int calculateTotalAmount(Rate[] rates, boolean isBullet) {
-        Rate lastRate;
+    private BigDecimal calculateRate(BigDecimal remainingMonths, BigDecimal rest) {
+        BigDecimal rate = rest.divide(remainingMonths, MathContext.DECIMAL128);
 
-        if(isBullet) {
-            lastRate = rates[0];
-        } else {
-            lastRate = rates[rates.length-1];
+        if(remainingMonths.intValue() == 1) {
+            return rate.add(rest);
         }
 
-        return lastRate.getTotal().add(lastRate.getRestAfter()).intValue();
+        return rate;
     }
 
     private BigDecimal calculateMonthlyInterest(BigDecimal rest) {

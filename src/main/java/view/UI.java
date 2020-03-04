@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -255,15 +256,23 @@ public class UI extends JFrame {
                                             .filter(loan -> loan.getLoanType().equals(LoanType.BULLET))
                                             .findFirst()
                                             .map(Loan::getTotal)
+                                            .map(BigDecimal::intValue)
                                             .filter(loan -> checkBullet.isEnabled());;
 
                 Optional<Integer> amortizingResult = loans.stream()
                                                 .filter(loan -> loan.getLoanType().equals(LoanType.AMORTIZING))
                                                 .findFirst()
                                                 .map(Loan::getTotal)
+                                                .map(BigDecimal::intValue)
                                                 .filter(loan -> checkAmortizing.isEnabled());
 
-                displayInformation(bulletResult, amortizingResult, Optional.empty()); //resultAnnuity);
+//                Optional<Integer> annuityResult = loans.stream()
+//X                                                         .filter(loan -> loan.getLoanType().equals(LoanType.ANNUITY))
+//                                                          .findFirst()
+//                                                          .map(Loan::getTotal)
+//                                                          .filter(loan -> checkAnnuity.isEnabled());
+
+                displayInformation(bulletResult, amortizingResult, Optional.of(0)); //annuityResult);
                 enableFields();
             }
 
@@ -289,7 +298,7 @@ public class UI extends JFrame {
                 }
 
                 // actually it's already sure here that it's not empty, but it returns Optional<x> if I don't do this
-                return result.orElseGet(() -> 0).toString();
+                return result.orElse(0).toString();
             }
 
             void enableFields() {

@@ -36,6 +36,9 @@ public class Rate {
 	public BigDecimal getTotal() { return total; }
 
 	private BigDecimal calculateRestAfter() {
+	    if(rate.intValue() > restBefore.intValue()) {
+	        return BigDecimal.ZERO;
+        }
         return restBefore.subtract(rate);
 	}
 }

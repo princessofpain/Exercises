@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static java.math.BigDecimal.*;
+
 public class Calculator {
     private BigDecimal interest;
     private BigDecimal years;
@@ -44,8 +46,9 @@ public class Calculator {
     private Loan calculateBullet() {
         BigDecimal interestInTotal = amount.divide(HUNDRED, MathContext.DECIMAL128).multiply(interest).multiply(years);
 
-        Rate[] rates = {new Rate(interestInTotal, amount, amount, amount.add(interestInTotal))};
-        return new Loan(LoanType.BULLET, rates, amount.add(interestInTotal), Optional.empty());
+        BigDecimal total = amount.add(interestInTotal);
+        Rate[] rates = {new Rate(interestInTotal, amount, amount, total)};
+        return new Loan(LoanType.BULLET, rates, total, Optional.of(total));
     }
 
     // this repayment has to be payed monthly including the interest. The total amount decreases every month and for this reason the value of the interest also changes
@@ -53,7 +56,7 @@ public class Calculator {
         BigDecimal allMonths = years.multiply(MONTH_A_YEAR);
         BigDecimal rest = amount;
         Rate[] rates = new Rate[allMonths.intValue()];
-        BigDecimal total = BigDecimal.ZERO;
+        BigDecimal total = ZERO;
         BigDecimal rate;
 
         for (int i = 0; i < rates.length; i++) {
@@ -64,56 +67,32 @@ public class Calculator {
             rates[i] = new Rate(monthlyInterest, rest, rate, total);
 
             rest = rates[i].getRestAfter();
-            allMonths = allMonths.subtract(BigDecimal.ONE);
+            allMonths = allMonths.subtract(ONE);
         }
-
         return new Loan(LoanType.AMORTIZING, rates, total, Optional.empty());
     }
 
     // this repayment is like the amortizing but the value of the total rate a month stays the same
     private Loan calculateAnnuity() {
-        BigDecimal allMonths = years.multiply(MONTH_A_YEAR);
-        BigDecimal interestValue = interest.divide(BigDecimal.valueOf(100), MathContext.DECIMAL32);
+        final MathContext ROUNDING_MODE = MathContext.DECIMAL32;
+        final BigDecimal HUNDRED = valueOf(100);
+        final BigDecimal TWELVE = valueOf(12);
+        final BigDecimal ALL_MONTHS = years.multiply(MONTH_A_YEAR);
         Rate[] rates = new Rate[years.multiply(MONTH_A_YEAR).intValue()];
+        BigDecimal total = ZERO;
 
-//        BigDecimal interestFactor = interest.divide(HUNDRED, MathContext.DECIMAL128);
+        BigDecimal interestPerMonth = interest.divide(HUNDRED, ROUNDING_MODE).divide(TWELVE, ROUNDING_MODE);
+        int powValue = years.negate().multiply(TWELVE, ROUNDING_MODE).intValue();
+        BigDecimal rate = interestPerMonth.multiply(amount, ROUNDING_MODE).divide((ONE.subtract((ONE.add(interestPerMonth).pow(powValue, ROUNDING_MODE)))), ROUNDING_MODE);
+        BigDecimal monthlyInterest = rate.multiply(ALL_MONTHS, ROUNDING_MODE).subtract(amount).divide(ALL_MONTHS, ROUNDING_MODE);
+        BigDecimal rest = amount.subtract(rate);
 
-//        BigDecimal partOne = interest.divide(MONTH_A_YEAR, MathContext.DECIMAL32).add(BigDecimal.ONE);
-//        BigDecimal powAmount = years.multiply(MONTH_A_YEAR).add(BigDecimal.ONE);
-//        BigDecimal partTwo = partOne.pow(powAmount.intValue()).subtract(BigDecimal.ONE);
-//        BigDecimal numerator = amount.multiply(partTwo);
-//        BigDecimal denominator = MONTH_A_YEAR.divide(years, MathContext.DECIMAL32);
-//        BigDecimal monthlyRateWithInterest = numerator.divide(denominator, MathContext.DECIMAL32).subtract(amount);
-//        BigDecimal monthlyRate = amount.divide(MONTH_A_YEAR, MathContext.DECIMAL32);
-        // |                         annuityLoan                            |
-        //          |                         numeratorResult               |
-        //            |             powResult            |
-        //              |numeratorBase |   |powVal |         |divisionVa|
-        // amount / ( ( (1 + 0.025 / 12) ^ (240 + 1) - 1 ) / (0.025 / 12) -1)
-
-        BigDecimal numeratorBase = interestValue.divide(MONTH_A_YEAR, MathContext.DECIMAL32).add(BigDecimal.ONE);
-        BigDecimal powValue = allMonths.add(BigDecimal.ONE);
-        BigDecimal divisionValue = interestValue.divide(MONTH_A_YEAR, MathContext.DECIMAL32);
-        BigDecimal powResult = numeratorBase.pow(powValue.intValue(), MathContext.DECIMAL32).subtract(BigDecimal.ONE);
-        BigDecimal numeratorResult = powResult.divide(divisionValue, MathContext.DECIMAL32).subtract(BigDecimal.ONE);
-        BigDecimal annuityCalculation = amount.divide(numeratorResult, MathContext.DECIMAL32);
-
-//        BigDecimal basicCalculation = interestFactor.add(BigDecimal.ONE).pow(years.intValue());
-//        BigDecimal numerator = basicCalculation.multiply(interestFactor);
-//        BigDecimal denominator = basicCalculation.subtract(BigDecimal.ONE);
-//        BigDecimal fractionResult = numerator.divide(denominator, MathContext.DECIMAL128);
-//
-        final BigDecimal monthlyInterest = annuityCalculation.multiply(years).subtract(amount).divide(MONTH_A_YEAR, MathContext.DECIMAL128);
-        final BigDecimal monthlyRate = annuityCalculation.divide(MONTH_A_YEAR, MathContext.DECIMAL128);
-        BigDecimal monthlyTotalRate = monthlyInterest.add(monthlyRate);
-        BigDecimal rest = annuityCalculation;
-
-        for (int i = 0; i < MONTH_A_YEAR.intValue(); i++) {
-            rates[i] = new Rate(monthlyInterest, rest, monthlyRate, monthlyTotalRate);
+        for (int i = 0; i < rates.length; i++) {
+            total = total.add(rate);
+            rates[i] = new Rate(monthlyInterest, rest, rate, total);
             rest = rates[i].getRestAfter();
         }
-        return null;
-                //new Loan(LoanType.ANNUITY, rates, calculateTotalAmount(rates, false));
+        return new Loan(LoanType.ANNUITY, rates, total, Optional.of(rate.doubleValue()));
     }
 
     private BigDecimal calculateRate(BigDecimal remainingMonths, BigDecimal rest) {
@@ -122,7 +101,6 @@ public class Calculator {
         if(remainingMonths.intValue() == 1) {
             return rate.add(rest);
         }
-
         return rate;
     }
 

@@ -21,7 +21,7 @@ class CalculatorTest {
 	void calculationsAreCorrect() {
 		int expectedBullet = 300000;
 		int expectedAmortizing = 251041;
-		int expectedAnnuity = 256588;
+		int expectedAnnuity = 254353;
 
 		List<Loan> allLoans = calculator.calculateAllLoans();
         int actualBullet = allLoans.stream()
@@ -36,14 +36,14 @@ class CalculatorTest {
                                     .findFirst()
                                     .orElse(0);
 
-//        int actualAnnuity = allLoans.stream()
-//                                 .filter(loan -> LoanType.ANNUITY.equals(loan.getLoanType()))
-//                                 .map(loan -> loan.getRates()[0].getTotal().intValue())
-//                                 .findFirst()
-//                                 .orElse(0);
+        int actualAnnuity = allLoans.stream()
+                                 .filter(loan -> LoanType.ANNUITY.equals(loan.getLoanType()))
+                                 .map(loan -> loan.getRates()[loan.getRates().length-1].getTotal().intValue())
+                                 .findFirst()
+                                 .orElse(0);
 
         assertEquals(expectedBullet, actualBullet);
 		assertEquals(expectedAmortizing, actualAmortizing);
-        // assertEquals(expectedAnnuity, annuity[annuity.length-1].getTotal().intValue());
+		assertEquals(expectedAnnuity, actualAnnuity);
 	}
 }

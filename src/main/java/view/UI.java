@@ -253,26 +253,27 @@ public class UI extends JFrame {
                 List<Loan> loans = myCredit.getLoans(amount, years, interest);
 
                 Optional<Integer> bulletResult = loans.stream()
-                                            .filter(loan -> loan.getLoanType().equals(LoanType.BULLET))
-                                            .findFirst()
-                                            .map(Loan::getTotal)
-                                            .map(BigDecimal::intValue)
-                                            .filter(loan -> checkBullet.isEnabled());;
+                                                        .filter(loan -> loan.getLoanType().equals(LoanType.BULLET))
+                                                        .findFirst()
+                                                        .map(Loan::getTotal)
+                                                        .map(BigDecimal::intValue)
+                                                        .filter(loan -> checkBullet.isEnabled());;
 
                 Optional<Integer> amortizingResult = loans.stream()
-                                                .filter(loan -> loan.getLoanType().equals(LoanType.AMORTIZING))
-                                                .findFirst()
-                                                .map(Loan::getTotal)
-                                                .map(BigDecimal::intValue)
-                                                .filter(loan -> checkAmortizing.isEnabled());
+                                                        .filter(loan -> loan.getLoanType().equals(LoanType.AMORTIZING))
+                                                        .findFirst()
+                                                        .map(Loan::getTotal)
+                                                        .map(BigDecimal::intValue)
+                                                        .filter(loan -> checkAmortizing.isEnabled());
 
-//                Optional<Integer> annuityResult = loans.stream()
-//X                                                         .filter(loan -> loan.getLoanType().equals(LoanType.ANNUITY))
-//                                                          .findFirst()
-//                                                          .map(Loan::getTotal)
-//                                                          .filter(loan -> checkAnnuity.isEnabled());
+                Optional<Integer> annuityResult = loans.stream()
+                                                          .filter(loan -> loan.getLoanType().equals(LoanType.ANNUITY))
+                                                          .findFirst()
+                                                          .map(Loan::getTotal)
+                                                          .map(BigDecimal::intValue)
+                                                          .filter(loan -> checkAnnuity.isEnabled());
 
-                displayInformation(bulletResult, amortizingResult, Optional.of(0)); //annuityResult);
+                displayInformation(bulletResult, amortizingResult, annuityResult);
                 enableFields();
             }
 

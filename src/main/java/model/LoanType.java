@@ -1,12 +1,6 @@
-package main.java.model;
+package model;
 
 public enum LoanType {
-    BULLET("bullet"), AMORTIZING("amortzing"), ANNUITY("annuity");
-
-    private final String type;
-
-    LoanType(String type) {
-        this.type = type;
-    }
+    BULLET, AMORTIZING, ANNUITY;
 }
 

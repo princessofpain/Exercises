@@ -1,4 +1,4 @@
-package main.java.model;
+package model;
 
 import java.math.BigDecimal;
 
@@ -9,7 +9,7 @@ public class Rate {
 	private BigDecimal restAfter;
 	private BigDecimal total;
 
-	Rate(BigDecimal monthlyInterest, BigDecimal restBefore, BigDecimal rate, BigDecimal total) {
+	public Rate(BigDecimal monthlyInterest, BigDecimal restBefore, BigDecimal rate, BigDecimal total) {
 		this.monthlyInterest = monthlyInterest;
 		this.restBefore = restBefore;
 		this.rate = rate;

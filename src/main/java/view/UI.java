@@ -1,4 +1,4 @@
-package main.java.view;
+package view;
 
 import java.awt.Color;
 import java.awt.EventQueue;
@@ -8,10 +8,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -22,9 +21,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-import main.java.controller.LoanResource;
-import main.java.model.Loan;
-import main.java.model.LoanType;
+import controller.LoanResource;
 
 public class UI extends JFrame {
 
@@ -39,6 +36,9 @@ public class UI extends JFrame {
     private JTextField textBullet;
     private JTextField textAmortizing;
     private JTextField textAnnuity;
+    private JTextField rateBullet;
+    private JTextField rateAmortizing;
+    private JTextField rateAnnuity;
     private LoanResource myCredit;
     private JCheckBox checkBullet;
     private JCheckBox checkAmortizing;
@@ -173,10 +173,10 @@ public class UI extends JFrame {
         labelResultBullet.setBounds(50, 227, 78, 16);
         contentPane.add(labelResultBullet);
 
-        JLabel labelResultAmoretizing = new JLabel("Amortizing");
-        labelResultAmoretizing.setEnabled(true);
-        labelResultAmoretizing.setBounds(50, 258, 78, 16);
-        contentPane.add(labelResultAmoretizing);
+        JLabel labelResultAmortizing = new JLabel("Amortizing");
+        labelResultAmortizing.setEnabled(true);
+        labelResultAmortizing.setBounds(50, 258, 78, 16);
+        contentPane.add(labelResultAmortizing);
 
         JLabel labelResultAnnuity = new JLabel("Annuity");
         labelResultAnnuity.setEnabled(true);
@@ -219,6 +219,24 @@ public class UI extends JFrame {
         textAnnuity.setBounds(160, 288, 98, 20);
         contentPane.add(textAnnuity);
 
+        rateBullet = new JTextField();
+        rateBullet.setEditable(false);
+        rateBullet.setColumns(10);
+        rateBullet.setBounds(270, 227, 98, 20);
+        contentPane.add(rateBullet);
+
+        rateAmortizing = new JTextField();
+        rateAmortizing.setEditable(false);
+        rateAmortizing.setColumns(10);
+        rateAmortizing.setBounds(270, 258, 98, 20);
+        contentPane.add(rateAmortizing);
+
+        rateAnnuity = new JTextField();
+        rateAnnuity.setEditable(false);
+        rateAnnuity.setColumns(10);
+        rateAnnuity.setBounds(270, 288, 98, 20);
+        contentPane.add(rateAnnuity);
+
         JLabel lblRepayment = new JLabel("Repayment");
         lblRepayment.setFont(new Font("Dialog", Font.BOLD, 14));
         lblRepayment.setEnabled(true);
@@ -235,6 +253,14 @@ public class UI extends JFrame {
         lblTotalAmount.setBounds(160, 190, 118, 16);
         contentPane.add(lblTotalAmount);
 
+        JLabel lblMonthlyRate = new JLabel("Rate");
+        lblMonthlyRate.setFont(new Font("Dialog", Font.BOLD, 14));
+        lblMonthlyRate.setEnabled(false);
+        lblMonthlyRate.setForeground(Color.BLACK);
+        lblMonthlyRate.setBackground(Color.WHITE);
+        lblMonthlyRate.setBounds(270, 190, 118, 16);
+        contentPane.add(lblMonthlyRate);
+
         JButton btnCalculate = new JButton("Calculate ");
         btnCalculate.addActionListener(new ActionListener() {
             public void cleanUp() {
@@ -250,87 +276,66 @@ public class UI extends JFrame {
                 interest = Double.parseDouble(textInterest.getText());
 
                 myCredit = new LoanResource();
-                List<Loan> loans = myCredit.getLoans(amount, years, interest);
+                Map<String, List<Integer>> loans = myCredit.getLoans(amount, years, interest);
 
-                Optional<Integer> bulletResult = loans.stream()
-                                                        .filter(loan -> loan.getLoanType().equals(LoanType.BULLET))
-                                                        .findFirst()
-                                                        .map(Loan::getTotal)
-                                                        .map(BigDecimal::intValue)
-                                                        .filter(loan -> checkBullet.isEnabled());;
-
-                Optional<Integer> amortizingResult = loans.stream()
-                                                        .filter(loan -> loan.getLoanType().equals(LoanType.AMORTIZING))
-                                                        .findFirst()
-                                                        .map(Loan::getTotal)
-                                                        .map(BigDecimal::intValue)
-                                                        .filter(loan -> checkAmortizing.isEnabled());
-
-                Optional<Integer> annuityResult = loans.stream()
-                                                          .filter(loan -> loan.getLoanType().equals(LoanType.ANNUITY))
-                                                          .findFirst()
-                                                          .map(Loan::getTotal)
-                                                          .map(BigDecimal::intValue)
-                                                          .filter(loan -> checkAnnuity.isEnabled());
+                List<Integer> bulletResult = loans.get("BULLET");
+                List<Integer> amortizingResult = loans.get("AMORTIZING");
+                List<Integer> annuityResult = loans.get("ANNUITY");
 
                 displayInformation(bulletResult, amortizingResult, annuityResult);
                 enableFields();
             }
 
-            void displayInformation(Optional<Integer> bullet, Optional<Integer> amortizing, Optional<Integer> annuity) {
+            void displayInformation(List<Integer> bullet, List<Integer> amortizing, List<Integer> annuity) {
+                int total = 0;
+                int monthlyRate = 1;
+
                 if(checkBullet.isSelected()) {
-                    textBullet.setText(unwrapResult(bullet));
+                    textBullet.setText(String.valueOf(bullet.get(total)));
+                    rateBullet.setText(String.valueOf(bullet.get(monthlyRate)));
+
                 }
 
                 if(checkAmortizing.isSelected()) {
-                    textAmortizing.setText(unwrapResult(amortizing));
+                    textAmortizing.setText(String.valueOf(amortizing.get(total)));
+                    rateAmortizing.setText("~ " + amortizing.get(monthlyRate));
                 }
 
                 if(checkAnnuity.isSelected()) {
-                    textAnnuity.setText(unwrapResult(annuity));
+                    textAnnuity.setText(String.valueOf(annuity.get(total)));
+                    rateAnnuity.setText(String.valueOf(annuity.get(monthlyRate)));
                 }
 
-                highlightBestOf(bullet, amortizing, annuity);
-            }
-
-            private String unwrapResult(Optional<Integer> result) {
-                if(!result.isPresent()) {
-                    return "";
-                }
-
-                // actually it's already sure here that it's not empty, but it returns Optional<x> if I don't do this
-                return result.orElse(0).toString();
+                highlightBestOf(bullet.get(0), amortizing.get(0), annuity.get(0));
             }
 
             void enableFields() {
                 textBullet.setEnabled(true);
                 textAmortizing.setEnabled(true);
                 textAnnuity.setEnabled(true);
-                labelResultAmoretizing.setEnabled(true);
+                labelResultAmortizing.setEnabled(true);
                 labelResultAnnuity.setEnabled(true);
                 labelResultBullet.setEnabled(true);
                 lblRepayment.setEnabled(true);
                 lblTotalAmount.setEnabled(true);
+                lblMonthlyRate.setEnabled(true);
             }
 
-            void highlightBestOf(Optional<Integer> bullet, Optional<Integer> amortizing, Optional<Integer> annuity) {
+            void highlightBestOf(Integer bullet, Integer amortizing, Integer annuity) {
 
-                List<Optional<Integer>> a = Arrays.asList(bullet, amortizing, annuity);
+                List<Integer> a = Arrays.asList(bullet, amortizing, annuity);
                 Integer bestLoan = a.stream()
-                                    .filter(result -> result.equals(0))
                                     .sorted()
                                     .findFirst()
-                                    .flatMap(r -> r)
                                     .orElse(-1);
 
-
-                if(bestLoan == bullet.orElseGet(() -> 0)) {
+                if(bestLoan.equals(bullet)) {
                     textBullet.setForeground(Color.GREEN);
                     textBullet.setFont(new Font("Dialog", Font.BOLD, 12));
-                } else if(bestLoan == amortizing.orElseGet(() -> -1)) {
+                } else if(bestLoan.equals(amortizing)) {
                     textAmortizing.setForeground(Color.GREEN);
                     textAmortizing.setFont(new Font("Dialog", Font.BOLD, 12));
-                } else if(bestLoan == annuity.orElseGet(() -> -1)) {
+                } else if(bestLoan.equals(annuity)) {
                     textAnnuity.setForeground(Color.GREEN);
                     textAnnuity.setFont(new Font("Dialog", Font.BOLD, 12));
                 }
@@ -342,7 +347,7 @@ public class UI extends JFrame {
         JButton btnDownloadFileBullet = new JButton("Download details");
         btnDownloadFileBullet.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
-                //myCredit.;
+                myCredit.getLoanDownloads("BULLET");
             }
         });
         btnDownloadFileBullet.setFont(new Font("Tahoma", Font.PLAIN, 9));
@@ -352,7 +357,7 @@ public class UI extends JFrame {
         JButton btnDownloadFileAmortizing = new JButton("Download Details");
         btnDownloadFileAmortizing.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
-                //myCredit.generateAmortizingPlanForDownload();
+                myCredit.getLoanDownloads("AMORTIZING");
             }
         });
         btnDownloadFileAmortizing.setFont(new Font("Tahoma", Font.PLAIN, 9));
@@ -362,7 +367,7 @@ public class UI extends JFrame {
         JButton btnDownloadFileAnnuity = new JButton("Download Details");
         btnDownloadFileAnnuity.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
-                //myCredit.generateAnnuityPlanForDownload();
+                myCredit.getLoanDownloads("ANNUITY");
             }
         });
         btnDownloadFileAnnuity.setFont(new Font("Tahoma", Font.PLAIN, 9));

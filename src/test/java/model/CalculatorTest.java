@@ -1,11 +1,8 @@
-package test.java.model;
+package model;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-import main.java.model.Calculator;
-import main.java.model.Loan;
-import main.java.model.LoanType;
 import org.junit.jupiter.api.Test;
 
 import static junit.framework.Assert.assertEquals;

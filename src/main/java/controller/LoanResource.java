@@ -1,22 +1,29 @@
-package main.java.controller;
+package controller;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import main.java.model.Calculator;
-import main.java.model.Loan;
-import main.java.view.XMLGenerator;
+import model.Calculator;
+import model.Loan;
+import model.PDFGenerator;
 
 public class LoanResource {
     Calculator calculator;
+    List<Loan> loans;
 
-    public List<Loan> getLoans(int amount, int years, double interest) {
+    public Map<String, List<Integer>> getLoans(int amount, int years, double interest) {
         calculator = new Calculator(BigDecimal.valueOf(amount), BigDecimal.valueOf(years), BigDecimal.valueOf(interest));
-        return calculator.calculateAllLoans();
+        loans = calculator.calculateAllLoans();
+        Map<String, List<Integer>> result = new HashMap<>();
+        loans.forEach(loan -> result.put(loan.getLoanType().toString(), Arrays.asList(loan.getTotal().intValue(), loan.getMonthlyRate().orElse(0))));
+        return result;
     }
 
-    public void getLoanDownloads() {
-        XMLGenerator generator = new XMLGenerator();
-        generator.generatePDF();
+    public void getLoanDownloads(String loanType) {
+        PDFGenerator pdfGenerator =  new PDFGenerator();
+        loans.stream().filter(loan -> loan.getLoanType().toString().equals(loanType)).forEach(pdfGenerator::generatePDF);
     }
 }

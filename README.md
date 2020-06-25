@@ -14,4 +14,4 @@ The goal is to develop an application that has lose coupling and a proper projec
 
 - finish download functionality with detailed rates
 - structure code with Spring MVC
-- get life information about interest rates and offer these as choices (including the bank that offers the interest)
+- get live information about interest rates and offer these as choices (including the bank that offers the interest)

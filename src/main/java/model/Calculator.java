@@ -6,7 +6,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static java.math.BigDecimal.*;
+import static java.math.BigDecimal.ONE;
+import static java.math.BigDecimal.ZERO;
+import static java.math.BigDecimal.valueOf;
 
 public class Calculator {
     private BigDecimal interest;
@@ -61,7 +63,7 @@ public class Calculator {
         BigDecimal rate;
 
         for (int i = 0; i < rates.length || rest.intValue() > 0; i++) {
-            rate = calculateRate(allMonths, rest);
+            rate = rest.divide(allMonths, ROUNDING_MODE);
             BigDecimal monthlyInterest = calculateMonthlyInterest(rest);
             total = total.add(monthlyInterest).add(rate);
 
@@ -91,15 +93,6 @@ public class Calculator {
             rest = rates[i].getRestAfter();
         }
         return new Loan(LoanType.ANNUITY, rates, total, Optional.of(rate.intValue()));
-    }
-
-    private BigDecimal calculateRate(BigDecimal remainingMonths, BigDecimal rest) {
-        BigDecimal rate = rest.divide(remainingMonths, ROUNDING_MODE);
-
-        if(remainingMonths.intValue() == 1) {
-            return rate.add(rest);
-        }
-        return rate;
     }
 
     private BigDecimal calculateMonthlyInterest(BigDecimal rest) {
